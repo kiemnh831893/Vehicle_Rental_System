@@ -154,7 +154,194 @@ This section describes the quality requirements of the Vehicle Rental System (VR
 ---
 
 ## 3. Data Flow Diagram (DFD)
-*(To be updated in the next step)*
+
+### 3.1 Context Diagram (Level 0 DFD)
+The Context Diagram defines the system boundary of the Vehicle Rental System (VRS), illustrating the central system (`0.0`) and its high-level data exchanges with external entities.
+
+#### External Entities
+- **Guest**: Unauthenticated visitors who browse the public vehicle catalog, view rental terms and showroom locations, or register/log in.
+- **Customer**: Authenticated members with verified Driver's Licenses who book vehicles online, request rental extensions, view rental history/invoices, download digital PDF contracts, and pay deposits or fines online.
+- **Rental Staff**: Showroom personnel managing fleet cataloging, Driver's License verification, counter vehicle handover (pick-up) and return inspections, periodic fleet audits, and damage/overdue violation records.
+- **Administrator**: System managers configuring rental/fine parameters, managing staff accounts and RBAC permissions, backing up/restoring databases, and inspecting statistical reports and audit logs.
+- **Payment Gateway**: External third-party financial service handling online reservation deposit, rental invoice, and penalty fine payments.
+
+#### Context Diagram
+![Context Diagram (Level 0 DFD)](/diagrams/dfd-level-0.png)
+
+<details>
+<summary>View Mermaid Source Code (Level 0 DFD)</summary>
+
+```mermaid
+graph TD
+    Guest["Guest"]
+    Customer["Customer"]
+    Staff["Rental Staff"]
+    Admin["Administrator"]
+    PaymentGateway["Payment Gateway"]
+
+    VRS(("0.0 Vehicle Rental System"))
+
+    %% Guest Data Flows
+    Guest -->|"1. Search Criteria, Registration Info, Credentials"| VRS
+    VRS -->|"2. Available Vehicles, Rental Policies, Auth Session"| Guest
+
+    %% Customer Data Flows
+    Customer -->|"3. Driver License, Booking Request, Extension, Online Payment"| VRS
+    VRS -->|"4. Rental History, Notifications, Invoices, PDF Contract"| Customer
+
+    %% Rental Staff Data Flows
+    Staff -->|"5. Vehicle Fleet Data, QR/Code Scan, Condition & Fine Record"| VRS
+    VRS -->|"6. Fleet Status, Audit Discrepancy Report, Settlement Receipts"| Staff
+
+    %% Administrator Data Flows
+    Admin -->|"7. Staff Account Data, Rental/Fine Parameters, Backup Command"| VRS
+    VRS -->|"8. Revenue & Fleet Reports, Audit Logs, Backup Archive"| Admin
+
+    %% Payment Gateway Data Flows
+    VRS -->|"9. Payment Invoice and Deposit/Fine Amount"| PaymentGateway
+    PaymentGateway -->|"10. Transaction Confirmation and Callback"| VRS
+```
+</details>
+
+---
+
+### 3.2 List of Data Stores
+The system relies on five persistent data stores to maintain data integrity and support all functional requirements defined in Section 1:
+
+| Store ID | Data Store Name | Description | Related FRs |
+| :--- | :--- | :--- | :--- |
+| **D1** | **Users & Driver Licenses** | Stores user credentials, personal profiles, assigned RBAC roles/permissions, account statuses (`ACTIVE`, `LOCKED`), and uploaded Driver's License verification records. | FR-GST-01, FR-GST-04, FR-CUS-02, FR-STF-11, FR-STF-12, FR-ADM-01, FR-ADM-02, FR-ADM-04 (read) |
+| **D2** | **Vehicle Fleet & Categories** | Stores vehicle specifications (License Plate, Brand, Model, Year, Transmission, Seats, Daily Rate, Odometer), categories, deposit rates, branch locations, and status (`AVAILABLE`, `RESERVED`, `RENTED`, `MAINTENANCE`, `RETIRED`). | FR-GST-02, FR-GST-03, FR-CUS-01, FR-STF-01 to FR-STF-05, FR-STF-13, FR-ADM-04 (read) |
+| **D3** | **Bookings & Rental Contracts** | Stores online reservation records, pick-up/return timestamps, start/end odometer readings, returned vehicle conditions (`INTACT`, `SCRATCHED`, `DAMAGED`), extension requests, and PDF digital contracts. | FR-CUS-03 to FR-CUS-06, FR-CUS-09, FR-STF-06 to FR-STF-08, FR-SYS-03, FR-ADM-04 (read) |
+| **D4** | **Invoices & Fine Records** | Stores rental invoices, deposit deductions, violation tickets (late return, fuel shortage, exterior/interior damage), calculated penalty amounts, and counter/online payment statuses. | FR-CUS-07, FR-CUS-08, FR-STF-09, FR-STF-10, FR-SYS-01, FR-ADM-04 (read) |
+| **D5** | **System Configs & Audit Logs** | Stores global operational settings (deposit percentage, max rental days, overdue fine rates, booking expiration time), backup metadata, and immutable system audit logs. | FR-ADM-03, FR-ADM-05 to FR-ADM-07, FR-SYS-02, FR-SYS-04 |
+
+---
+
+### 3.3 Level 1 DFD (Subsystem Decomposition)
+The central process (`0.0`) is decomposed into **6 core functional processes**:
+
+![Level 1 DFD](/diagrams/dfd-level-1.png)
+
+<details>
+<summary>View Mermaid Source Code (Level 1 DFD)</summary>
+
+```mermaid
+flowchart TB
+    classDef process fill:#ffffff,stroke:#333,stroke-width:2px,rx:8,ry:8;
+    classDef store fill:#ffffff,stroke:#333,stroke-width:2px;
+    classDef actor fill:#f0f0f0,stroke:#333,stroke-width:2px;
+
+    %% External Entities
+    Guest["Guest"]:::actor
+    Customer["Customer"]:::actor
+    Staff["Rental Staff"]:::actor
+    Admin["Administrator"]:::actor
+    PaymentGateway["Payment Gateway"]:::actor
+
+    %% Processes
+    P1(("1.0 User, Auth & License")):::process
+    P2(("2.0 Fleet Catalog & Audit")):::process
+    P3(("3.0 Booking, Handover & Return")):::process
+    P4(("4.0 Billing, Fine & Payment")):::process
+    P5(("5.0 System Admin & Reporting")):::process
+    P6(("6.0 Automated Background Jobs")):::process
+
+    %% Data Stores
+    D1[("D1: Users & Driver Licenses")]:::store
+    D2[("D2: Vehicle Fleet & Categories")]:::store
+    D3[("D3: Bookings & Rental Contracts")]:::store
+    D4[("D4: Invoices & Fine Records")]:::store
+    D5[("D5: System Configs & Audit Logs")]:::store
+
+    %% Connections for P1
+    Guest -->|"Reg / Login"| P1
+    Customer -->|"Profile & License Upload"| P1
+    Staff -->|"Verify License / Lock Account"| P1
+    Admin -->|"Manage Staff & RBAC"| P1
+    P1 <-->|"User & License Data"| D1
+    P1 -->|"Log Auth & Role Action"| D5
+
+    %% Connections for P2
+    Guest -->|"Search Vehicles / View Terms"| P2
+    Customer -->|"Search & Filter Fleet"| P2
+    Staff -->|"Add / Edit / Retire / Fleet Audit"| P2
+    P2 <-->|"Vehicle & Category Data"| D2
+    P2 -->|"Log Fleet Action"| D5
+
+    %% Connections for P3
+    Customer <-->|"Book Online / Extension / PDF Contract"| P3
+    Staff -->|"Handover Pick-up / Return Inspection"| P3
+    P3 <-->|"Verify Customer"| D1
+    P3 <-->|"Update Vehicle Status"| D2
+    P3 <-->|"Booking & Contract Data"| D3
+
+    %% Connections for P4
+    Staff -->|"Record Damage/Fine / Counter Pay"| P4
+    Customer -->|"Pay Deposit/Fine Online"| P4
+    P4 <-->|"Check Contract"| D3
+    P4 <-->|"Invoice & Fine Data"| D4
+    P4 <-->|"Customer Status"| D1
+    P4 -->|"Payment Invoice"| PaymentGateway
+    PaymentGateway -->|"Payment Status"| P4
+
+    %% Connections for P5
+    Admin -->|"Config Rates / Backup / View Reports"| P5
+    P5 <-->|"Configs & Logs"| D5
+    D1 -.->|"Read Data"| P5
+    D2 -.->|"Read Data"| P5
+    D3 -.->|"Read Data"| P5
+    D4 -.->|"Read Data"| P5
+
+    %% Connections for P6
+    D5 -.->|"Timer & Rate Config"| P6
+    D3 -.->|"Overdue & Unpaid Status"| P6
+    D1 -.->|"Customer Contact"| P6
+    P6 -->|"Auto Overdue Fine"| D4
+    P6 -->|"Auto Cancel Unpaid Booking"| D3
+    P6 -->|"Release Vehicle Status"| D2
+    P6 -->|"Send Reminder / Alert"| Customer
+    P6 -->|"Write System Log"| D5
+```
+</details>
+
+#### Detailed Process Descriptions
+
+##### Process 1.0: User, Authentication & License Management
+* **Description:** Handles customer account registration, login authentication, personal profile updates, Driver's License photo uploads and staff verification, customer account locking/unlocking, and staff RBAC permission management.
+* **Inputs:** Registration forms, login credentials, profile & license uploads, license approval/lock commands, staff/role assignments.
+* **Outputs:** Authentication session/tokens, profile & verification status views, account status updates.
+* **Data Stores:** Reads/Writes **D1 (Users & Driver Licenses)**, Writes **D5 (System Configs & Audit Logs)**.
+
+##### Process 2.0: Fleet Catalog & Inventory Audit Management
+* **Description:** Manages adding new vehicles, editing specifications and daily rental rates, vehicle category & deposit classification, showroom branch assignment, vehicle retirement/maintenance status, periodic physical fleet audits, and public vehicle searching/filtering.
+* **Inputs:** Search & date filter criteria, vehicle metadata, daily rates, parking branch locations, maintenance/retirement commands, physical fleet audit scans.
+* **Outputs:** Available vehicle search results, rental policy views, fleet discrepancy reports.
+* **Data Stores:** Reads/Writes **D2 (Vehicle Fleet & Categories)**, Writes **D5 (System Configs & Audit Logs)**.
+
+##### Process 3.0: Booking, Handover & Return Operations
+* **Description:** Processes online vehicle bookings (preventing overlapping double-bookings), evaluates rental extension requests, records showroom vehicle handover (pick-up) and return inspections (odometer mileage, fuel level, exterior/interior condition), and generates downloadable PDF contracts.
+* **Inputs:** Online booking requests, rental extension requests, booking QR/code scans, start/end odometer readings, returned vehicle condition (`INTACT`, `SCRATCHED`, `DAMAGED`).
+* **Outputs:** Booking confirmations, digital PDF rental contracts, handover agreements, updated vehicle statuses (`RESERVED`, `RENTED`, `AVAILABLE`, `MAINTENANCE`), extension approvals/rejections.
+* **Data Stores:** Reads **D1**, Reads/Writes **D2**, Reads/Writes **D3 (Bookings & Rental Contracts)**.
+
+##### Process 4.0: Billing, Fine Management & Payment Processing
+* **Description:** Creates violation/damage fine records (late return, fuel shortage, vehicle damage), computes final contract settlement (deducting fines from security deposits), records showroom counter payments, and integrates with the Payment Gateway for online deposit/invoice/fine payments.
+* **Inputs:** Damage/violation tickets, counter payment confirmations, online payment gateway callbacks.
+* **Outputs:** Itemized invoices and fine statements, payment receipts, updated booking/contract settlement statuses.
+* **Data Stores:** Reads **D3**, Reads/Writes **D4 (Invoices & Fine Records)**, Reads/Writes **D1**.
+
+##### Process 5.0: System Administration, Audit & Reporting
+* **Description:** Enables administrators to configure global rental/fine parameters, generate and export analytical charts/reports (fleet utilization, revenue, fines), execute database backups and restores, and inspect system audit logs.
+* **Inputs:** Policy parameter values, report date/type filters, database backup/restore commands.
+* **Outputs:** Exported PDF/Excel statistical reports, configuration confirmations, database backup archives, audit log views.
+* **Data Stores:** Reads **D1, D2, D3, D4**; Reads/Writes **D5 (System Configs & Audit Logs)**.
+
+##### Process 6.0: Automated Background Services
+* **Description:** Executes scheduled background tasks (e.g., hourly overdue contract scanning and 30-minute unpaid booking expiration checks) to calculate accrued overdue fees, send due/overdue/booking notifications, cancel unpaid reservations, and log automated actions.
+* **Inputs:** Scheduled timer triggers and penalty rates from **D5**, active contract and pending booking statuses from **D3**, customer contact details from **D1**.
+* **Outputs:** Automated overdue fine entries, email/SMS/in-app notifications to Customers, canceled unpaid bookings and released vehicle statuses, system log entries.
+* **Data Stores:** Reads **D1**, Reads/Writes **D2**, Reads/Writes **D3**, Reads/Writes **D4**, Reads/Writes **D5**.
 
 ## 4. Use Case Diagram
 *(To be updated)*
