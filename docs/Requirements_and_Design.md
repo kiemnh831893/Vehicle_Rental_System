@@ -355,4 +355,44 @@ flowchart TB
 *(To be updated)*
 
 ## 7. Interface Design Description
-*(To be updated)*
+
+### 7.1 User Interface Design Process & Principles
+The Graphical User Interface (GUI) of the Vehicle Rental System (VRS) is designed following the industry-standard software engineering interface design process (Interface Analysis, Architectural Design, Construction, and Validation)[cite: 8]. 
+
+#### Core UI/UX Design Principles:
+1. **Interface Analysis & User Understanding:** Designed based on user workflow analysis for four distinct actor groups (`Guest`, `Customer`, `Rental Staff`, and `Administrator`), ensuring tailored access to relevant tasks and contents[cite: 8].
+2. **Navigation Clarity ("Where am I? What can I do?"):** Every screen provides clear visual indicators of the user's location within the content hierarchy, active options, live links, and seamless backward/forward navigation[cite: 8].
+3. **Consistency & Aesthetic Design:** Adheres to minimalist design guidelines—utilizing appropriate white space, emphasizing core content (vehicles, contracts, invoices), organizing layout elements from top-left to bottom-right, and logically grouping navigation, content, and functions[cite: 8].
+4. **Error Prevention & Feedback:** Responsive design elements automatically adapt to screen sizes from mobile viewports (360px) to desktop monitors (`NFR-USA-04`), coupled with instant validation feedback.
+
+---
+
+### 7.2 Navigation Flow (Sitemap)
+* **Guest:** Landing Page $\rightarrow$ Vehicle Catalog Search $\rightarrow$ Vehicle Details / Rental Policies $\rightarrow$ Registration / Login.
+* **Customer:** Dashboard $\rightarrow$ Profile & License Upload $\rightarrow$ Online Booking & Payment Gateway $\rightarrow$ Active Rental & Extension Request $\rightarrow$ Invoices & Fines History.
+* **Rental Staff:** Staff Dashboard $\rightarrow$ Fleet Catalog Management $\rightarrow$ Counter Handover (Pick-up) Desk $\rightarrow$ Return Inspection & Damage/Fine Logging Desk.
+* **Administrator:** Admin Panel $\rightarrow$ Staff RBAC Management $\rightarrow$ Global Rate Configurations $\rightarrow$ Revenue & Fleet Reports $\rightarrow$ Audit Logs & Database Backup.
+
+---
+
+### 7.3 Core Screen Wireframes and Descriptions
+
+#### 7.3.1 Vehicle Catalog & Search Interface (Guest & Customer)
+* **Purpose:** Allows users to filter available vehicles by date range, category, transmission, and price range, compare daily rates, and initiate online reservations (`FR-GST-02`, `FR-CUS-03`).
+* **UI Components:** Global search header, date-range pick-up/return selector, sidebar category filters, and a responsive grid of vehicle cards (displaying cover photo, brand/model, seating capacity, daily rate, status badge, and *"Book Now"* button).
+![Vehicle Catalog Screen](/design/vehicle-search-screen.png)
+
+#### 7.3.2 Showroom Circulation Desk Interface (Rental Staff)
+* **Purpose:** Streamlines physical showroom counter operations for vehicle handovers and return inspections (`FR-STF-03` to `FR-STF-09`).
+* **UI Components:** Quick-scan input for booking QR codes or license plates, customer identity verification panel, odometer/fuel logging fields, condition dropdown (`INTACT`, `SCRATCHED`, `DAMAGED`), and contract settlement calculation summary.
+![Staff Handover Screen](/design/staff-handover-screen.png)
+
+#### 7.3.3 Customer Dashboard & Rental History (Customer)
+* **Purpose:** Provides customers with a centralized view of their Driver's License verification status (`VERIFIED`/`UNVERIFIED`), active rental countdown timers, past rental contracts, and online invoice/fine payments (`FR-CUS-02` to `FR-CUS-08`).
+* **UI Components:** Status badge widget, tabbed navigation (*Active Rentals*, *Booking History*, *Invoices & Fines*), *"Request Extension"* button, and online payment gateway integration.
+![Customer Dashboard Screen](/design/customer-dashboard-screen.png)
+
+#### 7.3.4 Administrator Control Panel (Administrator)
+* **Purpose:** Empowers administrators to manage staff accounts, configure global rental/fine policies, and oversee analytics (`FR-ADM-01` to `FR-ADM-04`).
+* **UI Components:** Analytical metric cards (Monthly Revenue, Fleet Utilization Rate, Overdue Count), charts for rental trends, staff account management table, and system parameter configuration form.
+![Admin Dashboard Screen](/design/admin-dashboard-screen.png)
