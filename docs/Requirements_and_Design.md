@@ -166,7 +166,7 @@ The Context Diagram defines the system boundary of the Vehicle Rental System (VR
 - **Payment Gateway**: External third-party financial service handling online reservation deposit, rental invoice, and penalty fine payments.
 
 #### Context Diagram
-![Context Diagram (Level 0 DFD)](diagrams/DFD-Level-0.drawio.png)
+![Context Diagram (Level 0 DFD)](diagrams/dfd-level-0.drawio.png)
 
 <details>
 <summary>Level 0 DFD</summary>
@@ -221,7 +221,7 @@ The system relies on five persistent data stores to maintain data integrity and 
 ### 3.3 Level 1 DFD (Subsystem Decomposition)
 The central process (`0.0`) is decomposed into **6 core functional processes**:
 
-![Level 1 DFD](diagrams/DFD-Level-1.drawio.png)
+![Level 1 DFD](diagrams/dfd-level-1.drawio.png)
 
 <details>
 <summary>Level 1 DFD</summary>
