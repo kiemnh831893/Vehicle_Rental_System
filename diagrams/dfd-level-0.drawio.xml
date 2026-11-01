@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Trang-1" id="0Px1OXO1l-8YWQBaC_pf">
+    <mxGraphModel dx="3679" dy="2171" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="" mermaidData="{&#xa;  &quot;data&quot;: &quot;graph TD\n    Guest[\&quot;Guest\&quot;]\n    Customer[\&quot;Customer\&quot;]\n    Staff[\&quot;Rental Staff\&quot;]\n    Admin[\&quot;Administrator\&quot;]\n    PaymentGateway[\&quot;Payment Gateway\&quot;]\n\n    VRS((\&quot;0.0 Vehicle Rental System\&quot;))\n\n    Guest --&gt;|\&quot;1. Search Criteria, Registration Info, Credentials\&quot;| VRS\n    VRS --&gt;|\&quot;2. Available Vehicles, Rental Policies, Auth Session\&quot;| Guest\n\n    Customer --&gt;|\&quot;3. Driver License, Booking Request, Extension, Online Payment\&quot;| VRS\n    VRS --&gt;|\&quot;4. Rental History, Notifications, Invoices, PDF Contract\&quot;| Customer\n\n    Staff --&gt;|\&quot;5. Vehicle Fleet Data, QR/Code Scan, Condition &amp; Fine Record\&quot;| VRS\n    VRS --&gt;|\&quot;6. Fleet Status, Audit Discrepancy Report, Settlement Receipts\&quot;| Staff\n\n    Admin --&gt;|\&quot;7. Staff Account Data, Rental/Fine Parameters, Backup Command\&quot;| VRS\n    VRS --&gt;|\&quot;8. Revenue &amp; Fleet Reports, Audit Logs, Backup Archive\&quot;| Admin\n\n    VRS --&gt;|\&quot;9. Payment Invoice and Deposit/Fine Amount\&quot;| PaymentGateway\n    PaymentGateway --&gt;|\&quot;10. Transaction Confirmation and Callback\&quot;| VRS&quot;,&#xa;  &quot;config&quot;: null,&#xa;  &quot;version&quot;: &quot;12&quot;&#xa;}" id="eDA-SbfWusnDVPBf2exl-1">
+          <mxCell connectable="0" parent="1" style="group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;" vertex="1">
+            <mxGeometry as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Guest" mermaidId="n:Guest" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="Guest" id="eDA-SbfWusnDVPBf2exl-2">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="45" width="152" x="1490" y="30" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Customer" mermaidId="n:Customer" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="Customer" id="eDA-SbfWusnDVPBf2exl-3">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="45" width="152" x="169" y="521" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Rental Staff" mermaidId="n:Staff" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="Rental Staff" id="eDA-SbfWusnDVPBf2exl-4">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="45" width="152" x="1031" y="521" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Administrator" mermaidId="n:Admin" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="Administrator" id="eDA-SbfWusnDVPBf2exl-5">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="45" width="152" x="1942" y="521" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Payment Gateway" mermaidId="n:PaymentGateway" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="Payment Gateway" id="eDA-SbfWusnDVPBf2exl-6">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;labelWidth=120;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="67" width="152" x="2693" y="521" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="0.0 Vehicle Rental System" mermaidId="n:VRS" mermaidBaseStyle="ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;" mermaidBaseValue="0.0 Vehicle Rental System" id="eDA-SbfWusnDVPBf2exl-7">
+          <mxCell parent="eDA-SbfWusnDVPBf2exl-1" style="ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#28253D;fontColor=#28253D;fontFamily=Recursive;fontSize=14;shadow=1;shadowColor=#000000;shadowOffsetX=4;shadowOffsetY=4;shadowBlur=0;shadowOpacity=6;labelWidth=120;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" vertex="1">
+            <mxGeometry height="184" width="184" x="1474" y="176" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="1. Search Criteria, Registration Info, Credentials" mermaidId="e:Guest-&gt;VRS#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=1;entryX=0.35;entryY=0;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="1. Search Criteria, Registration Info, Credentials" id="eDA-SbfWusnDVPBf2exl-8">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=1;entryX=0.35;entryY=0;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1544" y="95" />
+                <mxPoint x="1382" y="95" />
+                <mxPoint x="1382" y="156" />
+                <mxPoint x="1539" y="156" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="2. Available Vehicles, Rental Policies, Auth Session" mermaidId="e:VRS-&gt;Guest#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.65;exitY=0;entryX=0.65;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="2. Available Vehicles, Rental Policies, Auth Session" id="eDA-SbfWusnDVPBf2exl-9">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.65;exitY=0;entryX=0.65;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-2">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1594" y="156" />
+                <mxPoint x="1751" y="156" />
+                <mxPoint x="1751" y="95" />
+                <mxPoint x="1588" y="95" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="3. Driver License, Booking Request, Extension, Online Payment" mermaidId="e:Customer-&gt;VRS#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.35;exitY=0.01;entryX=0.15;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="3. Driver License, Booking Request, Extension, Online Payment" id="eDA-SbfWusnDVPBf2exl-10">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.35;exitY=0.01;entryX=0.15;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="223" y="501" />
+                <mxPoint x="30" y="501" />
+                <mxPoint x="30" y="380" />
+                <mxPoint x="1502" y="380" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="4. Rental History, Notifications, Invoices, PDF Contract" mermaidId="e:VRS-&gt;Customer#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.25;exitY=1;entryX=0.64;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="4. Rental History, Notifications, Invoices, PDF Contract" id="eDA-SbfWusnDVPBf2exl-11">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.25;exitY=1;entryX=0.64;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-3">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1521" y="400" />
+                <mxPoint x="459" y="400" />
+                <mxPoint x="459" y="501" />
+                <mxPoint x="267" y="501" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="5. Vehicle Fleet Data, QR/Code Scan, Condition &amp; Fine Record" mermaidId="e:Staff-&gt;VRS#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=0.01;entryX=0.35;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="5. Vehicle Fleet Data, QR/Code Scan, Condition &amp; Fine Record" id="eDA-SbfWusnDVPBf2exl-12">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=0.01;entryX=0.35;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1085" y="501" />
+                <mxPoint x="882" y="501" />
+                <mxPoint x="882" y="420" />
+                <mxPoint x="1539" y="420" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="6. Fleet Status, Audit Discrepancy Report, Settlement Receipts" mermaidId="e:VRS-&gt;Staff#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.45;exitY=1;entryX=0.65;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="6. Fleet Status, Audit Discrepancy Report, Settlement Receipts" id="eDA-SbfWusnDVPBf2exl-13">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.45;exitY=1;entryX=0.65;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-4">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1557" y="440" />
+                <mxPoint x="1333" y="440" />
+                <mxPoint x="1333" y="501" />
+                <mxPoint x="1129" y="501" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="7. Staff Account Data, Rental/Fine Parameters, Backup Command" mermaidId="e:Admin-&gt;VRS#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=0.01;entryX=0.55;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="7. Staff Account Data, Rental/Fine Parameters, Backup Command" id="eDA-SbfWusnDVPBf2exl-14">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.36;exitY=0.01;entryX=0.55;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1996" y="501" />
+                <mxPoint x="1800" y="501" />
+                <mxPoint x="1800" y="440" />
+                <mxPoint x="1575" y="440" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="8. Revenue &amp; Fleet Reports, Audit Logs, Backup Archive" mermaidId="e:VRS-&gt;Admin#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.65;exitY=1;entryX=0.65;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="8. Revenue &amp; Fleet Reports, Audit Logs, Backup Archive" id="eDA-SbfWusnDVPBf2exl-15">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.65;exitY=1;entryX=0.65;entryY=0.01;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-5">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1594" y="420" />
+                <mxPoint x="2237" y="420" />
+                <mxPoint x="2237" y="501" />
+                <mxPoint x="2040" y="501" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="9. Payment Invoice and Deposit/Fine Amount" mermaidId="e:VRS-&gt;PaymentGateway#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.75;exitY=1;entryX=0.36;entryY=0;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="9. Payment Invoice and Deposit/Fine Amount" id="eDA-SbfWusnDVPBf2exl-16">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.75;exitY=1;entryX=0.36;entryY=0;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-6">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1612" y="400" />
+                <mxPoint x="2607" y="400" />
+                <mxPoint x="2607" y="501" />
+                <mxPoint x="2747" y="501" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="10. Transaction Confirmation and Callback" mermaidId="e:PaymentGateway-&gt;VRS#0" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.64;exitY=0;entryX=0.85;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;" mermaidBaseValue="10. Transaction Confirmation and Callback" id="eDA-SbfWusnDVPBf2exl-17">
+          <mxCell edge="1" parent="eDA-SbfWusnDVPBf2exl-1" source="eDA-SbfWusnDVPBf2exl-6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;startArrow=none;endArrow=block;endSize=8;jumpStyle=arc;jumpSize=12;strokeColor=#000000;html=1;fontSize=14;labelBackgroundColor=#cccccc;fontFamily=Recursive;fontColor=#28253D;exitX=0.64;exitY=0;entryX=0.85;entryY=1;strokeWidth=2;targetPerimeterSpacing=4;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRecursive;" target="eDA-SbfWusnDVPBf2exl-7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="2791" y="501" />
+                <mxPoint x="2932" y="501" />
+                <mxPoint x="2932" y="380" />
+                <mxPoint x="1630" y="380" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
