@@ -305,8 +305,6 @@ flowchart TB
 ```
 </details>
 
-> **Note:** Mermaid has no built-in symbol for the standard DFD data store (two parallel lines / open-ended rectangle), so the data stores appear as cylinders in the Mermaid source code. The exported diagrams in `/diagrams/` can use either standard notation.
-
 #### Detailed Process Descriptions
 
 ##### Process 1.0: User, Authentication & License Management
