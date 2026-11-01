@@ -305,6 +305,8 @@ flowchart TB
 ```
 </details>
 
+> **Note:** Mermaid has no built-in symbol for the standard DFD data store (two parallel lines / open-ended rectangle), so the data stores appear as cylinders in the Mermaid source code. The exported diagrams in `/diagrams/` can use either standard notation.
+
 #### Detailed Process Descriptions
 
 ##### Process 1.0: User, Authentication & License Management
@@ -342,6 +344,8 @@ flowchart TB
 * **Inputs:** Scheduled timer triggers and penalty rates from **D5**, active contract and pending booking statuses from **D3**, customer contact details from **D1**.
 * **Outputs:** Automated overdue fine entries, email/SMS/in-app notifications to Customers, canceled unpaid bookings and released vehicle statuses, system log entries.
 * **Data Stores:** Reads **D1**, Reads/Writes **D2**, Reads/Writes **D3**, Reads/Writes **D4**, Reads/Writes **D5**.
+
+---
 
 ## 4. Use Case Diagram
 *(To be updated)*
