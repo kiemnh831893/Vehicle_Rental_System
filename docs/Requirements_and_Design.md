@@ -343,7 +343,230 @@ flowchart TB
 ---
 
 ## 4. Use Case Diagram
-*(To be updated)*
+
+### 4.1 System Use Case Diagram
+The Use Case Diagram illustrates the interactions between the system actors (`Guest`, `Customer`, `Rental Staff`, `Administrator`, and `System`) and the 25 use cases of the Vehicle Rental System (VRS), mapped directly to all functional requirements in Section 1.
+
+![Use Case Diagram](/diagrams/usecase-diagram.png)
+
+<details>
+<summary>View PlantUML Source Code (Use Case Diagram)</summary>
+
+```plantuml
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Guest" as G
+actor "Customer" as Cus
+actor "Rental Staff" as Staff
+actor "Administrator" as Admin
+actor "System (Cron Job)" as Sys
+
+G <|-- Cus
+Staff <|-- Admin
+
+rectangle "Vehicle Rental System (VRS)" {
+    usecase "UC-01: Register Customer Account" as UC1
+    usecase "UC-02: Login & Authentication" as UC2
+    usecase "UC-03: Search & Filter Vehicles" as UC3
+    usecase "UC-04: View Rental Terms & Branches" as UC4
+    usecase "UC-05: Update Profile & Upload License" as UC5
+    usecase "UC-06: Book Vehicle Online" as UC6
+    usecase "UC-07: Request Rental Extension" as UC7
+    usecase "UC-08: View Rental History & Invoices" as UC8
+    usecase "UC-09: Pay Deposit/Fine Online" as UC9
+    usecase "UC-10: Download PDF Rental Contract" as UC10
+    usecase "UC-11: Manage Vehicle Fleet (CRUD)" as UC11
+    usecase "UC-12: Process Vehicle Handover (Pick-up)" as UC12
+    usecase "UC-13: Process Vehicle Return & Inspection" as UC13
+    usecase "UC-14: Record Damage & Overdue Fine" as UC14
+    usecase "UC-15: Verify Customer Driver License" as UC15
+    usecase "UC-16: Lock/Unlock Customer Account" as UC16
+    usecase "UC-17: Perform Periodic Fleet Audit" as UC17
+    usecase "UC-18: Manage Staff Accounts & RBAC" as UC18
+    usecase "UC-19: Configure Rental & Fine Parameters" as UC19
+    usecase "UC-20: Generate Statistical Reports" as UC20
+    usecase "UC-21: Database Backup & Restore" as UC21
+    usecase "UC-22: Inspect System Audit Logs" as UC22
+    usecase "UC-23: Auto-Scan Overdue Contracts" as UC23
+    usecase "UC-24: Auto-Send Reminders & Alerts" as UC24
+    usecase "UC-25: Auto-Cancel Unpaid Bookings" as UC25
+}
+
+G --> UC1
+G --> UC2
+G --> UC3
+G --> UC4
+
+Cus --> UC5
+Cus --> UC6
+Cus --> UC7
+Cus --> UC8
+Cus --> UC9
+Cus --> UC10
+
+Staff --> UC2
+Staff --> UC11
+Staff --> UC12
+Staff --> UC13
+Staff --> UC14
+Staff --> UC15
+Staff --> UC16
+Staff --> UC17
+
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+
+Sys --> UC23
+Sys --> UC24
+Sys --> UC25
+
+UC6 ..> UC2 : <<include>>
+UC6 ..> UC9 : <<include>>
+UC7 ..> UC2 : <<include>>
+UC8 ..> UC2 : <<include>>
+UC10 ..> UC2 : <<include>>
+UC12 ..> UC2 : <<include>>
+UC13 ..> UC2 : <<include>>
+UC14 <. UC13 : <<extend>>
+@enduml
+```
+</details>
+
+---
+
+### 4.2 Actor & Use Case Catalogue
+
+#### 4.2.1 List of Actors
+| No. | Actor Name | Description |
+| :--- | :--- | :--- |
+| 1 | **Guest** | Unauthenticated visitor who can browse the vehicle catalog, check rental terms/branch locations, register a new account, and log in. |
+| 2 | **Customer** | Authenticated user with a verified Driver's License who can book vehicles online, request extensions, view rental history/invoices, download PDF contracts, and pay deposits/fines online. Inherits all Guest capabilities. |
+| 3 | **Rental Staff** | Showroom employee responsible for managing the vehicle fleet, verifying customer licenses, processing vehicle handover (pick-up) and return inspections, recording damages/fines, and auditing physical inventory. |
+| 4 | **Administrator** | System manager with the highest authority, responsible for staff accounts and RBAC permissions, system parameter configuration, statistical reports, database backups, and audit logs. Inherits Staff capabilities. |
+| 5 | **System (Cron Job)** | Automated background scheduler that scans overdue contracts hourly, sends email/SMS reminders, and cancels expired unpaid bookings. |
+
+#### 4.2.2 Use Case Traceability Matrix
+| Use Case ID | Use Case Name | Primary Actor | Related FRs |
+| :--- | :--- | :--- | :--- |
+| **UC-01** | Register Customer Account | Guest | FR-GST-01 |
+| **UC-02** | Login & Authentication | Guest, Customer, Staff, Admin | FR-GST-04 |
+| **UC-03** | Search & Filter Vehicles | Guest, Customer, Staff | FR-GST-02, FR-CUS-01 |
+| **UC-04** | View Rental Terms & Branches | Guest, Customer | FR-GST-03, FR-CUS-01 |
+| **UC-05** | Update Profile & Upload License | Customer | FR-CUS-02 |
+| **UC-06** | Book Vehicle Online | Customer | FR-CUS-03 |
+| **UC-07** | Request Rental Extension | Customer | FR-CUS-04, FR-CUS-05 |
+| **UC-08** | View Rental History & Invoices | Customer | FR-CUS-06, FR-CUS-07 |
+| **UC-09** | Pay Deposit/Fine Online | Customer | FR-CUS-08 |
+| **UC-10** | Download PDF Rental Contract | Customer | FR-CUS-09 |
+| **UC-11** | Manage Vehicle Fleet (CRUD) | Rental Staff | FR-STF-01 to FR-STF-05 |
+| **UC-12** | Process Vehicle Handover (Pick-up) | Rental Staff | FR-STF-06 |
+| **UC-13** | Process Vehicle Return & Inspection | Rental Staff | FR-STF-07, FR-STF-08 |
+| **UC-14** | Record Damage & Overdue Fine | Rental Staff | FR-STF-09, FR-STF-10 |
+| **UC-15** | Verify Customer Driver License | Rental Staff | FR-STF-11 |
+| **UC-16** | Lock/Unlock Customer Account | Rental Staff | FR-STF-12 |
+| **UC-17** | Perform Periodic Fleet Audit | Rental Staff | FR-STF-13 |
+| **UC-18** | Manage Staff Accounts & RBAC | Administrator | FR-ADM-01, FR-ADM-02 |
+| **UC-19** | Configure Rental & Fine Parameters | Administrator | FR-ADM-03 |
+| **UC-20** | Generate Statistical Reports | Administrator | FR-ADM-04 |
+| **UC-21** | Database Backup & Restore | Administrator | FR-ADM-05, FR-ADM-06 |
+| **UC-22** | Inspect System Audit Logs | Administrator | FR-ADM-07, FR-SYS-04 |
+| **UC-23** | Auto-Scan Overdue Contracts | System | FR-SYS-01 |
+| **UC-24** | Auto-Send Reminders & Alerts | System | FR-SYS-02 |
+| **UC-25** | Auto-Cancel Unpaid Bookings | System | FR-SYS-03 |
+
+---
+
+### 4.3 Detailed Use Case Specifications (Core Use Cases)
+
+To guide software implementation (Stage 3) and test case creation (Stage 4), the detailed specifications for the core use cases are provided below.
+
+#### 1. UC-03: Search & Filter Vehicles
+* **Summary:** Allows users to search and filter public vehicles by brand, category, transmission, price range, and pick-up/return dates to check availability.
+* **Primary Actor:** Guest / Customer / Rental Staff.
+* **Preconditions:** The system database is online and vehicle catalog data is initialized.
+* **Postconditions:** Matching available vehicles are displayed to the user; system state remains unchanged.
+* **Main Flow:**
+  1. The user navigates to the Vehicle Catalog search page.
+  2. The user enters search criteria (Pick-up Date, Expected Return Date, Vehicle Category, Brand, Transmission, or Price Range) and clicks **"Search"**.
+  3. The system validates that the Pick-up Date is not in the past and the Return Date is later than the Pick-up Date.
+  4. The system queries the database, filtering out vehicles in `MAINTENANCE` or `RETIRED` status and excluding vehicles with overlapping active bookings/contracts.
+  5. The system displays a paginated list of matching available vehicles with daily rental rates and specifications.
+  6. The user selects a vehicle card to view detailed photos, required security deposit rate, and showroom branch location.
+* **Alternative / Exception Flows:**
+  * **3a. Invalid Date Range:** If the Return Date is earlier than the Pick-up Date, the system highlights the date fields and displays an error message: *"Return date must be later than pick-up date."*
+  * **5a. No Matching Vehicles:** If no vehicles match the filter criteria, the system displays *"No available vehicles found for the selected dates"* and suggests clearing filters.
+* **Special Requirements:** Search response time shall not exceed 2.0 seconds (`NFR-PER-01`).
+
+#### 2. UC-06: Book Vehicle Online
+* **Summary:** Allows an authenticated Customer with a verified Driver's License to reserve an available vehicle online and pay the reservation deposit.
+* **Primary Actor:** Customer.
+* **Included Use Cases:** `UC-02 (Login & Authentication)`, `UC-09 (Pay Deposit/Fine Online)`.
+* **Preconditions:** Customer is logged in, account status is `ACTIVE`, and Driver's License status is `VERIFIED`.
+* **Postconditions:** If successful, a `CONFIRMED` booking record is saved, deposit payment is recorded, and the vehicle is reserved for the selected date range.
+* **Main Flow:**
+  1. Customer views an available vehicle's detail page, selects Pick-up Date, Expected Return Date, and optional insurance, and clicks **"Book Now"**.
+  2. System checks Customer eligibility (`ACTIVE` account, `VERIFIED` license, no unpaid overdue fines).
+  3. System acquires a pessimistic row-level database lock (`NFR-REL-03`) on the vehicle record to verify zero overlapping reservations.
+  4. System calculates total rental days, estimated rental fee, and required reservation deposit, then creates a booking with status `PENDING_PAYMENT`.
+  5. System redirects the Customer to the Payment Gateway (`<<include>> UC-09`).
+  6. Customer completes the online deposit payment within 30 minutes.
+  7. System updates the booking status to `CONFIRMED`, updates the vehicle status to `RESERVED`, and sends a booking confirmation receipt with a QR code.
+* **Alternative / Exception Flows:**
+  * **2a. Unverified Driver's License:** If the Customer's license is `UNVERIFIED` or `REJECTED`, the system blocks the booking and redirects the Customer to upload a valid Driver's License (`UC-05`).
+  * **3a. Concurrency Conflict:** If another Customer simultaneously booked the vehicle for overlapping dates, the system aborts the transaction and notifies the Customer that the vehicle is no longer available.
+  * **6a. Payment Timeout:** If the Customer fails to pay the deposit within 30 minutes, the automated background job (`UC-25`) cancels the booking (`CANCELLED`) and releases the vehicle back to `AVAILABLE`.
+
+#### 3. UC-11: Manage Vehicle Fleet (CRUD)
+* **Summary:** Allows Rental Staff to add new vehicles, update vehicle details and daily rental prices, assign categories/branches, or retire/send vehicles to maintenance.
+* **Primary Actor:** Rental Staff.
+* **Preconditions:** Rental Staff is logged in with valid staff permissions.
+* **Postconditions:** Vehicle fleet records in the database are added, updated, or retired, and an audit log entry is recorded.
+* **Main Flow:**
+  1. Rental Staff selects the **"Fleet Management"** menu; the system displays the paginated vehicle fleet list.
+  2. **Add Vehicle Sub-flow:** Staff clicks **"Add New Vehicle"**, enters License Plate, Brand, Model, Category, Publish Year, Transmission, Seats, Daily Rate, Odometer, and Branch Location, and clicks **"Save"**. The system validates uniqueness of the License Plate and creates the record with `AVAILABLE` status.
+  3. **Update Vehicle Sub-flow:** Staff selects an existing vehicle, modifies its specifications, daily rate, or branch location, and clicks **"Update"**. The system validates the data and saves changes.
+  4. **Retire / Maintenance Sub-flow:** Staff selects a vehicle and changes its status to `MAINTENANCE` or `RETIRED`. The system asks for confirmation (`NFR-USA-05`) and removes the vehicle from public booking availability.
+* **Alternative / Exception Flows:**
+  * **2a. Duplicate License Plate:** If the entered License Plate already exists in the database, the system rejects creation and displays an error message.
+  * **4a. Vehicle Currently Rented:** If Staff attempts to retire a vehicle whose status is currently `RENTED` or `RESERVED`, the system blocks the action until active contracts/bookings are completed.
+
+#### 4. UC-12: Process Vehicle Handover (Pick-up)
+* **Summary:** Allows Rental Staff to hand over a reserved vehicle to a Customer at the showroom counter and activate the rental contract.
+* **Primary Actor:** Rental Staff.
+* **Preconditions:** Rental Staff is logged in; Customer arrives at the showroom with a `CONFIRMED` booking QR code and original Driver's License / National ID.
+* **Postconditions:** A new `RentalContract` is activated (`ACTIVE`), initial vehicle metrics are saved, and vehicle status becomes `RENTED`.
+* **Main Flow:**
+  1. Rental Staff opens the **"Vehicle Handover"** screen and scans the Customer's booking QR code (or enters Booking ID).
+  2. System retrieves booking details, Customer profile, and assigned vehicle information.
+  3. Rental Staff physically inspects and verifies the Customer's original Driver's License and National ID.
+  4. Rental Staff inspects the vehicle with the Customer and inputs the initial odometer reading (`start_mileage`), fuel level, and exterior condition notes into the form.
+  5. Rental Staff clicks **"Confirm Handover"**.
+  6. System creates an active `RentalContract` (`ACTIVE`), updates the booking status to `CONVERTED_TO_CONTRACT`, updates the vehicle status from `RESERVED` to `RENTED`, and generates a downloadable PDF contract (`UC-10`).
+* **Exception Flow:**
+  * **3a. Invalid Identification Documents:** If the Customer fails to present valid original identification documents, Rental Staff rejects the handover and cancels the booking according to showroom policy.
+
+#### 5. UC-13: Process Vehicle Return & Inspection
+* **Summary:** Allows Rental Staff to record a returned vehicle, inspect its physical condition and odometer reading, and settle the rental contract.
+* **Primary Actor:** Rental Staff.
+* **Extended Use Case:** `UC-14 (Record Damage & Overdue Fine)`.
+* **Preconditions:** Rental Staff is logged in; the vehicle is currently in `RENTED` status under an `ACTIVE` or `OVERDUE` contract.
+* **Postconditions:** Contract status is updated to `COMPLETED`, final invoice is settled, and vehicle status is updated to `AVAILABLE` or `MAINTENANCE`.
+* **Main Flow:**
+  1. Rental Staff opens the **"Process Return"** screen and enters the vehicle's License Plate or Contract ID.
+  2. System retrieves the active `RentalContract`, displaying scheduled return time, initial odometer reading (`start_mileage`), and paid deposit amount.
+  3. Rental Staff inspects the returned vehicle and inputs the actual return timestamp, final odometer reading (`end_mileage`), fuel level, and physical condition (`INTACT`, `SCRATCHED`, or `DAMAGED`).
+  4. System compares the actual return time with the scheduled due date and checks the inspection condition.
+  5. If returned on time, with sufficient fuel, and in `INTACT` condition, the system calculates the final balance (deducting the paid deposit).
+  6. Customer pays the remaining rental balance (or receives deposit refund) at the counter; Rental Staff clicks **"Complete Return"**.
+  7. System marks the contract as `COMPLETED`, marks the invoice as `PAID`, and updates the vehicle's `current_mileage` and status to `AVAILABLE`.
+* **Extension Point (`<<extend>> UC-14: Record Damage & Overdue Fine`):**
+  * **5a. Violation Detected:** If the vehicle is returned past the due date, has insufficient fuel, or its condition is `SCRATCHED` / `DAMAGED`, the system triggers **UC-14** to calculate overdue penalty fees and repair costs, adds them to the final invoice, and sets the vehicle status to `MAINTENANCE` (if damaged) before closing the contract.
+
 
 ## 5. Class Diagram
 *(To be updated)*
