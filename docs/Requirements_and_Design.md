@@ -565,7 +565,282 @@ Administrator "1" -- "0..*" SystemConfig : configures >
   * `User "1" -- "0..*" AuditLog` and `Administrator "1" -- "0..*" SystemConfig`: Tracks immutable security logs (`FR-SYS-04`, `FR-ADM-07`) and dynamic system parameters (`FR-ADM-03`).
 
 ## 6. Data Model
-*(To be updated)*
+
+### 6.1 Mapping Rules from Class Diagram to Relational Database
+Following the software engineering principles for converting an Object-Oriented Class Diagram into a Relational Database Schema, the database tables are derived using four mapping rules:
+1. **Inheritance Mapping (Joined Subclass Strategy):** The abstract class `User` is mapped to the base table `USERS` (`user_id` PK). Role-specific subclasses (`Customer` and `RentalStaff`) are mapped to `CUSTOMERS` and `RENTAL_STAFF` tables, where `user_id` serves as both the Primary Key (PK) and Foreign Key (FK) referencing `USERS(user_id)`.
+2. **One-to-Many (`1:N`) Relationships (Reference Key Strategy):** The Primary Key of the "1" side is placed as a Foreign Key in the "N" side table (e.g., `category_id` in `VEHICLES`, `customer_id` and `vehicle_id` in `BOOKINGS`, `contract_id` in `FINE_RECORDS` and `INVOICES`).
+3. **One-to-One (`1:1`) Lifecycle Relationship:** The `1..1` to `0..1` transition between `Booking` and `RentalContract` is mapped by placing `booking_id` in `RENTAL_CONTRACTS` with both a `FOREIGN KEY` and a `UNIQUE` constraint.
+4. **System & Security Auditing Tables:** `SYSTEM_CONFIGS` and `AUDIT_LOGS` are included to satisfy dynamic configuration (`FR-ADM-03`, `NFR-MNT-02`) and immutable security logging (`FR-SYS-04`, `NFR-SEC-08`).
+
+---
+
+### 6.2 Entity-Relationship Diagram (ERD / Relational Schema)
+![Entity-Relationship Diagram](/diagrams/erd-diagram.png)
+
+<details>
+<summary>View PlantUML Source Code (ERD Diagram)</summary>
+
+```plantuml
+@startuml
+top to bottom direction
+hide methods
+hide stereotypes
+skinparam nodesep 50
+skinparam ranksep 60
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam linetype ortho
+
+entity "USERS" as users {
+    * **user_id** : VARCHAR(36) <<PK>>
+    --
+    * full_name : VARCHAR(100)
+    * email : VARCHAR(100) <<UNIQUE>>
+    * phone : VARCHAR(20) <<UNIQUE>>
+    * national_id : VARCHAR(20) <<UNIQUE>>
+    * password_hash : VARCHAR(255)
+    * role : ENUM('CUSTOMER','STAFF','ADMIN')
+    * account_status : ENUM('ACTIVE','LOCKED')
+    * created_at : DATETIME
+}
+
+entity "CUSTOMERS" as customers {
+    * **user_id** : VARCHAR(36) <<PK, FK>>
+    --
+    * driver_license_no : VARCHAR(30) <<UNIQUE>>
+    * license_image_url : VARCHAR(255)
+    * license_status : ENUM('UNVERIFIED','VERIFIED','REJECTED')
+}
+
+entity "RENTAL_STAFF" as staff {
+    * **user_id** : VARCHAR(36) <<PK, FK>>
+    --
+    * employee_code : VARCHAR(20) <<UNIQUE>>
+    * branch_location : VARCHAR(100)
+}
+
+entity "VEHICLE_CATEGORIES" as categories {
+    * **category_id** : INT <<PK>>
+    --
+    * category_name : VARCHAR(50) <<UNIQUE>>
+    * deposit_rate : DECIMAL(5,2)
+    description : TEXT
+}
+
+entity "VEHICLES" as vehicles {
+    * **vehicle_id** : VARCHAR(36) <<PK>>
+    --
+    * *category_id* : INT <<FK>>
+    * license_plate : VARCHAR(20) <<UNIQUE>>
+    * brand : VARCHAR(50)
+    * model : VARCHAR(50)
+    * publish_year : INT
+    * transmission : ENUM('AUTO','MANUAL')
+    * seats : INT
+    * daily_rate : DECIMAL(12,2)
+    * current_mileage : INT
+    * branch_location : VARCHAR(100)
+    * status : ENUM('AVAILABLE','RESERVED','RENTED','MAINTENANCE','RETIRED')
+}
+
+entity "BOOKINGS" as bookings {
+    * **booking_id** : VARCHAR(36) <<PK>>
+    --
+    * *customer_id* : VARCHAR(36) <<FK>>
+    * *vehicle_id* : VARCHAR(36) <<FK>>
+    * pickup_date : DATETIME
+    * expected_return_date : DATETIME
+    * total_estimated_cost : DECIMAL(12,2)
+    * deposit_amount : DECIMAL(12,2)
+    * booking_status : ENUM('PENDING_PAYMENT','CONFIRMED','CANCELLED','CONVERTED_TO_CONTRACT')
+    * created_at : DATETIME
+}
+
+entity "RENTAL_CONTRACTS" as contracts {
+    * **contract_id** : VARCHAR(36) <<PK>>
+    --
+    * *booking_id* : VARCHAR(36) <<FK, UNIQUE>>
+    * *staff_handover_id* : VARCHAR(36) <<FK>>
+    *staff_return_id* : VARCHAR(36) <<FK, NULL>>
+    * actual_pickup_time : DATETIME
+    * expected_return_date : DATETIME
+    actual_return_time : DATETIME <<NULL>>
+    * start_mileage : INT
+    end_mileage : INT <<NULL>>
+    return_condition : ENUM('INTACT','SCRATCHED','DAMAGED') <<NULL>>
+    * contract_status : ENUM('ACTIVE','OVERDUE','COMPLETED')
+}
+
+entity "FINE_RECORDS" as fines {
+    * **fine_id** : VARCHAR(36) <<PK>>
+    --
+    * *contract_id* : VARCHAR(36) <<FK>>
+    * violation_type : ENUM('LATE_RETURN','FUEL_SHORTAGE','EXTERIOR_DAMAGE')
+    * fine_amount : DECIMAL(12,2)
+    description : TEXT
+    * is_paid : BOOLEAN
+}
+
+entity "INVOICES" as invoices {
+    * **invoice_id** : VARCHAR(36) <<PK>>
+    --
+    * *contract_id* : VARCHAR(36) <<FK>>
+    * total_rental_fee : DECIMAL(12,2)
+    * total_fine_fee : DECIMAL(12,2)
+    * deposit_deducted : DECIMAL(12,2)
+    * final_amount_due : DECIMAL(12,2)
+    * payment_method : ENUM('CASH','ONLINE_GATEWAY')
+    * payment_status : ENUM('UNPAID','PAID','REFUNDED')
+    paid_at : DATETIME <<NULL>>
+}
+
+entity "SYSTEM_CONFIGS" as configs {
+    * **config_key** : VARCHAR(50) <<PK>>
+    --
+    * config_value : VARCHAR(255)
+    * updated_at : DATETIME
+}
+
+entity "AUDIT_LOGS" as logs {
+    * **log_id** : BIGINT <<PK>>
+    --
+    * *user_id* : VARCHAR(36) <<FK>>
+    * action : VARCHAR(255)
+    * timestamp : DATETIME
+}
+
+users ||--o| customers : "is a"
+users ||--o| staff : "is a"
+users ||--o{ logs : "triggers"
+categories ||--o{ vehicles : "classifies"
+customers ||--o{ bookings : "places"
+vehicles ||--o{ bookings : "reserved in"
+bookings ||--o| contracts : "converts to"
+staff ||--o{ contracts : "processes"
+contracts ||--o{ fines : "incurs"
+contracts ||--|{ invoices : "generates"
+@enduml
+```
+</details>
+
+---
+
+### 6.3 Database Schema & Data Dictionary
+
+#### 6.3.1 Table `USERS` (Base User Accounts)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `user_id` | VARCHAR(36) | NOT NULL | **PK** | Unique UUID identifier for each user. |
+| `full_name` | VARCHAR(100) | NOT NULL | | Full legal name of the user. |
+| `email` | VARCHAR(100) | NOT NULL, UNIQUE | | Login email address (`FR-GST-01`). |
+| `phone` | VARCHAR(20) | NOT NULL, UNIQUE | | Contact phone number for SMS alerts. |
+| `national_id` | VARCHAR(20) | NOT NULL, UNIQUE | | Citizen ID / Passport number. |
+| `password_hash` | VARCHAR(255) | NOT NULL | | Salted Bcrypt password hash (`NFR-SEC-01`). |
+| `role` | ENUM | NOT NULL | | `'CUSTOMER'`, `'STAFF'`, or `'ADMIN'` (`FR-ADM-02`). |
+| `account_status` | ENUM | DEFAULT `'ACTIVE'` | | `'ACTIVE'` or `'LOCKED'` (`FR-STF-12`). |
+| `created_at` | DATETIME | DEFAULT CURRENT_TIMESTAMP | | Account registration timestamp. |
+
+#### 6.3.2 Table `CUSTOMERS` (Customer Driver's License Profile)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `user_id` | VARCHAR(36) | NOT NULL | **PK, FK** | References `USERS(user_id)` on delete cascade. |
+| `driver_license_no` | VARCHAR(30) | UNIQUE, NULLABLE | | Driver's license number (`FR-CUS-02`). |
+| `license_image_url` | VARCHAR(255) | NULLABLE | | Private storage path to license photo (`NFR-SEC-10`). |
+| `license_status` | ENUM | DEFAULT `'UNVERIFIED'` | | `'UNVERIFIED'`, `'VERIFIED'`, or `'REJECTED'` (`FR-STF-11`). |
+
+#### 6.3.3 Table `RENTAL_STAFF` (Showroom Staff Profile)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `user_id` | VARCHAR(36) | NOT NULL | **PK, FK** | References `USERS(user_id)`. |
+| `employee_code` | VARCHAR(20) | NOT NULL, UNIQUE | | Internal staff identification code (`FR-ADM-01`). |
+| `branch_location` | VARCHAR(100) | NOT NULL | | Assigned showroom branch. |
+
+#### 6.3.4 Table `VEHICLE_CATEGORIES` (Fleet Classification)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `category_id` | INT | AUTO_INCREMENT | **PK** | Unique identifier for vehicle category. |
+| `category_name` | VARCHAR(50) | NOT NULL, UNIQUE | | Category name: Sedan, SUV, Motorbike, Van (`FR-STF-03`). |
+| `deposit_rate` | DECIMAL(5,2) | NOT NULL | | Required security deposit percentage (e.g., `30.00` for 30%). |
+| `description` | TEXT | NULLABLE | | Category terms and insurance notes. |
+
+#### 6.3.5 Table `VEHICLES` (Vehicle Fleet Catalog)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `vehicle_id` | VARCHAR(36) | NOT NULL | **PK** | Unique UUID identifier for each vehicle (`FR-STF-01`). |
+| `category_id` | INT | NOT NULL | **FK** | References `VEHICLE_CATEGORIES(category_id)`. |
+| `license_plate` | VARCHAR(20) | NOT NULL, UNIQUE | | Official vehicle registration plate. |
+| `brand` | VARCHAR(50) | NOT NULL | | Vehicle manufacturer (e.g., Toyota, Honda, VinFast). |
+| `model` | VARCHAR(50) | NOT NULL | | Vehicle model name (e.g., Camry, CR-V, VF8). |
+| `publish_year` | INT | NOT NULL | | Manufacturing year. |
+| `transmission` | ENUM | NOT NULL | | `'AUTO'` or `'MANUAL'` (`FR-GST-02`). |
+| `seats` | INT | NOT NULL | | Passenger seating capacity. |
+| `daily_rate` | DECIMAL(12,2) | NOT NULL | | Rental price per day in VND (`FR-STF-02`). |
+| `current_mileage` | INT | NOT NULL, DEFAULT 0 | | Current odometer reading in kilometers. |
+| `branch_location` | VARCHAR(100) | NOT NULL | | Showroom branch or parking bay (`FR-STF-04`). |
+| `status` | ENUM | DEFAULT `'AVAILABLE'` | | `'AVAILABLE'`, `'RESERVED'`, `'RENTED'`, `'MAINTENANCE'`, `'RETIRED'` (`FR-STF-05`). |
+
+#### 6.3.6 Table `BOOKINGS` (Online Vehicle Reservations)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `booking_id` | VARCHAR(36) | NOT NULL | **PK** | Unique reservation code (`FR-CUS-03`). |
+| `customer_id` | VARCHAR(36) | NOT NULL | **FK** | References `CUSTOMERS(user_id)`. |
+| `vehicle_id` | VARCHAR(36) | NOT NULL | **FK** | References `VEHICLES(vehicle_id)`. |
+| `pickup_date` | DATETIME | NOT NULL | | Scheduled pick-up date and time. |
+| `expected_return_date`| DATETIME | NOT NULL | | Scheduled return date and time. |
+| `total_estimated_cost`| DECIMAL(12,2) | NOT NULL | | Estimated total rental fee in VND. |
+| `deposit_amount` | DECIMAL(12,2) | NOT NULL | | Required reservation deposit amount in VND. |
+| `booking_status` | ENUM | NOT NULL | | `'PENDING_PAYMENT'`, `'CONFIRMED'`, `'CANCELLED'`, `'CONVERTED_TO_CONTRACT'`. |
+| `created_at` | DATETIME | DEFAULT CURRENT_TIMESTAMP | | Used by cron job (`FR-SYS-03`) to expire unpaid bookings after 30 mins. |
+
+#### 6.3.7 Table `RENTAL_CONTRACTS` (Active & Historical Rental Contracts)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `contract_id` | VARCHAR(36) | NOT NULL | **PK** | Unique digital contract ID (`FR-STF-06`). |
+| `booking_id` | VARCHAR(36) | NOT NULL, UNIQUE | **FK** | References `BOOKINGS(booking_id)`. |
+| `staff_handover_id` | VARCHAR(36) | NOT NULL | **FK** | Staff who processed pick-up (`RENTAL_STAFF(user_id)`). |
+| `staff_return_id` | VARCHAR(36) | NULLABLE | **FK** | Staff who inspected vehicle return (`FR-STF-07`). |
+| `actual_pickup_time` | DATETIME | NOT NULL | | Exact timestamp when vehicle left the showroom. |
+| `expected_return_date`| DATETIME | NOT NULL | | Due date (updated if extension `FR-CUS-05` is approved). |
+| `actual_return_time` | DATETIME | NULLABLE | | Exact timestamp when vehicle was returned. |
+| `start_mileage` | INT | NOT NULL | | Odometer reading at handover. |
+| `end_mileage` | INT | NULLABLE | | Odometer reading at return. |
+| `return_condition` | ENUM | NULLABLE | | `'INTACT'`, `'SCRATCHED'`, or `'DAMAGED'` (`FR-STF-08`). |
+| `contract_status` | ENUM | DEFAULT `'ACTIVE'` | | `'ACTIVE'`, `'OVERDUE'`, or `'COMPLETED'` (`FR-SYS-01`). |
+
+#### 6.3.8 Table `FINE_RECORDS` (Overdue & Damage Violation Tickets)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `fine_id` | VARCHAR(36) | NOT NULL | **PK** | Unique penalty record ID (`FR-STF-09`). |
+| `contract_id` | VARCHAR(36) | NOT NULL | **FK** | References `RENTAL_CONTRACTS(contract_id)`. |
+| `violation_type` | ENUM | NOT NULL | | `'LATE_RETURN'`, `'FUEL_SHORTAGE'`, or `'EXTERIOR_DAMAGE'`. |
+| `fine_amount` | DECIMAL(12,2) | NOT NULL | | Calculated penalty amount in VND (`FR-CUS-07`). |
+| `description` | TEXT | NULLABLE | | Detailed inspection or overdue notes. |
+| `is_paid` | BOOLEAN | DEFAULT FALSE | | Indicates whether the fine has been settled. |
+
+#### 6.3.9 Table `INVOICES` (Rental Invoices & Settlement Receipts)
+| Column Name | Data Type | Constraints | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `invoice_id` | VARCHAR(36) | NOT NULL | **PK** | Unique invoice number (`FR-CUS-08`, `FR-STF-10`). |
+| `contract_id` | VARCHAR(36) | NOT NULL | **FK** | References `RENTAL_CONTRACTS(contract_id)`. |
+| `total_rental_fee` | DECIMAL(12,2) | NOT NULL | | Base rental fee calculated from rental days. |
+| `total_fine_fee` | DECIMAL(12,2) | DEFAULT 0.00 | | Sum of all fines linked to the contract. |
+| `deposit_deducted` | DECIMAL(12,2) | NOT NULL | | Deposit amount subtracted from final total. |
+| `final_amount_due` | DECIMAL(12,2) | NOT NULL | | Remaining balance to pay (or refund if negative). |
+| `payment_method` | ENUM | NOT NULL | | `'CASH'` (at counter) or `'ONLINE_GATEWAY'`. |
+| `payment_status` | ENUM | DEFAULT `'UNPAID'` | | `'UNPAID'`, `'PAID'`, or `'REFUNDED'`. |
+| `paid_at` | DATETIME | NULLABLE | | Timestamp of settlement completion. |
+
+#### 6.3.10 Tables `SYSTEM_CONFIGS` & `AUDIT_LOGS`
+| Table | Column Name | Data Type | Key | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **SYSTEM_CONFIGS** | `config_key` | VARCHAR(50) | **PK** | Parameter key (e.g., `OVERDUE_HOURLY_RATE`, `MAX_RENTAL_DAYS`). |
+| **SYSTEM_CONFIGS** | `config_value` | VARCHAR(255) | | Parameter value configured by Admin (`FR-ADM-03`). |
+| **SYSTEM_CONFIGS** | `updated_at` | DATETIME | | Last configuration update timestamp. |
+| **AUDIT_LOGS** | `log_id` | BIGINT | **PK** | Auto-incrementing log identifier (`FR-ADM-07`). |
+| **AUDIT_LOGS** | `user_id` | VARCHAR(36) | **FK** | Actor who performed the action (`USERS(user_id)`). |
+| **AUDIT_LOGS** | `action` | VARCHAR(255) | | Immutable description of the critical action (`FR-SYS-04`). |
+| **AUDIT_LOGS** | `timestamp` | DATETIME | | Exact timestamp of the event (`NFR-SEC-08`). |
 
 ## 7. Interface Design Description
 
