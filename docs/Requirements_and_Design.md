@@ -365,32 +365,40 @@ To guide software implementation (Stage 3) and test case creation (Stage 4), the
 * **Extension Point (`<<extend>> UC-14: Record Damage & Overdue Fine`):**
   * **5a. Violation Detected:** If the vehicle is returned past the due date, has insufficient fuel, or its condition is `SCRATCHED` / `DAMAGED`, the system triggers **UC-14** to calculate overdue penalty fees and repair costs, adds them to the final invoice, and sets the vehicle status to `MAINTENANCE` (if damaged) before closing the contract.
 
+## 5. Class Diagram & Software Architecture Design
 
+### 5.1 Software Architecture Design (Stage 2 Requirement)
+To satisfy the maintainability and scalability requirements (`NFR-MNT-01` to `NFR-MNT-04`), the Vehicle Rental System (VRS) is designed using a **3-Tier Architecture** combined with the **Model-View-Controller (MVC)** and **Repository Design Pattern**:
+
+1. **Presentation Tier (View Layer):**
+   * **Responsibility:** Renders the responsive Graphical User Interface (GUI) for Guests, Customers, Rental Staff, and Administrators (`NFR-USA-04`).
+   * **Components:** Public Vehicle Catalog Views, Customer Booking & Profile Dashboards, Showroom Handover/Return Counter Forms (supporting QR/barcode scanner inputs per `NFR-COM-02`), and Admin Analytical Dashboards.
+2. **Business Logic Tier (Controller & Service Layer):**
+   * **Responsibility:** Processes HTTP requests from the View layer, enforces Role-Based Access Control (`NFR-SEC-03`), validates business rules, and executes scheduled background cron jobs (`FR-SYS-01` to `FR-SYS-04`).
+   * **Core Services:** `AuthService` (Bcrypt hashing & JWT session control), `FleetService` (vehicle CRUD & audit), `BookingService` (pessimistic locking to prevent double-booking per `NFR-REL-03`), `ContractService` (handover, return inspection, extension validation, and PDF generation), and `BillingService` (deposit/fine calculation and Payment Gateway integration).
+3. **Data Access Tier (Repository & Model Layer):**
+   * **Responsibility:** Abstracts database operations using the Repository Pattern, enforces ACID transactions (`NFR-REL-02`), and maps domain entities to relational database tables.
+
+---
+
+### 5.2 System Domain Class Diagram
+The Class Diagram models the static object-oriented structure of the Vehicle Rental System, including domain classes, attributes, operations, enumerations, and class relationships.
+
+![Class Diagram](/diagrams/class-diagram.png)
+
+<details>
+<summary>View PlantUML Source Code (Class Diagram)</summary>
+
+```plantuml
 @startuml
 top to bottom direction
-
-' Tinh chỉnh khoảng cách chống đè chữ & chống cắt dây tuyệt đối
 skinparam nodesep 55
 skinparam ranksep 65
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam roundcorner 6
 skinparam linetype ortho
-skinparam defaultFontName "Segoe UI"
-skinparam defaultFontSize 12
 
-skinparam class {
-    BackgroundColor #FFFFFF
-    HeaderBackgroundColor #F2F4F8
-    BorderColor #2B2B2B
-    BorderThickness 1.2
-    ArrowColor #2B2B2B
-    FontColor #000000
-}
-
-' ==========================================
-' 1. NHÁNH KẾ THỪA NGƯỜI DÙNG (USER HIERARCHY)
-' ==========================================
 abstract class "User" as User <<abstract>> {
     # userId : String {id}
     # fullName : String
@@ -434,9 +442,6 @@ User <|-- Customer
 User <|-- RentalStaff
 User <|-- Administrator
 
-' ==========================================
-' 2. NHÓM ĐỐI TƯỢNG PHƯƠNG TIỆN & NGHIỆP VỤ THUÊ
-' ==========================================
 class VehicleCategory {
     - categoryId : int {id}
     - categoryName : String
@@ -530,57 +535,6 @@ class AuditLog {
     - timestamp : DateTime
 }
 
-' ==========================================
-' 3. CÁC KIỂU LIỆT KÊ (ENUMERATIONS)
-' ==========================================
-together {
-    enum AccountStatus <<enumeration>> {
-        ACTIVE
-        LOCKED
-    }
-    enum LicenseStatus <<enumeration>> {
-        UNVERIFIED
-        VERIFIED
-        REJECTED
-    }
-    enum VehicleStatus <<enumeration>> {
-        AVAILABLE
-        RESERVED
-        RENTED
-        MAINTENANCE
-        RETIRED
-    }
-    enum BookingStatus <<enumeration>> {
-        PENDING_PAYMENT
-        CONFIRMED
-        CANCELLED
-        CONVERTED_TO_CONTRACT
-    }
-    enum ContractStatus <<enumeration>> {
-        ACTIVE
-        OVERDUE
-        COMPLETED
-    }
-    enum VehicleCondition <<enumeration>> {
-        INTACT
-        SCRATCHED
-        DAMAGED
-    }
-    enum ViolationType <<enumeration>> {
-        LATE_RETURN
-        FUEL_SHORTAGE
-        EXTERIOR_DAMAGE
-    }
-    enum PaymentStatus <<enumeration>> {
-        UNPAID
-        PAID
-        REFUNDED
-    }
-}
-
-' ==========================================
-' 4. LIÊN KẾT GIỮA CÁC LỚP (RELATIONSHIPS)
-' ==========================================
 VehicleCategory "1" o-- "0..*" Vehicle : classifies >
 Customer "1" -- "0..*" Booking : places >
 Vehicle "1" -- "0..*" Booking : reserved in >
@@ -590,8 +544,25 @@ RentalContract "1" *-- "0..*" FineRecord : incurs >
 RentalContract "1" *-- "1..*" Invoice : generates >
 User "1" -- "0..*" AuditLog : triggers >
 Administrator "1" -- "0..*" SystemConfig : configures >
-
 @enduml
+```
+</details>
+
+---
+
+### 5.3 Explanation of Classes and Relationships
+
+* **Generalization (Inheritance - `<|--`):**
+  * The abstract base class `User` encapsulates shared identity and authentication attributes (`userId`, `fullName`, `email`, `phone`, `nationalId`, `passwordHash`, `accountStatus`).
+  * `Customer`, `RentalStaff`, and `Administrator` inherit from `User` and extend role-specific attributes and operations (`FR-GST-04`, `FR-ADM-01`, `FR-ADM-02`).
+* **Aggregation (`o--`):**
+  * `VehicleCategory "1" o-- "0..*" Vehicle`: A category (e.g., Sedan, SUV, Motorbike) groups multiple vehicles (`FR-STF-03`). Vehicles can exist independently and be reassigned if a category is reorganized.
+* **Composition (`*--`):**
+  * `RentalContract "1" *-- "0..*" FineRecord` and `RentalContract "1" *-- "1..*" Invoice`: Fine records and settlement invoices are strictly bound to the lifecycle of a specific `RentalContract` (`FR-CUS-07`, `FR-STF-09`, `FR-STF-10`).
+* **Association (`--`):**
+  * `Customer "1" -- "0..*" Booking` and `Vehicle "1" -- "0..*" Booking`: Links a Customer and a Vehicle through an online reservation (`FR-CUS-03`).
+  * `Booking "1" -- "0..1" RentalContract`: When the Customer picks up the vehicle at the showroom (`FR-STF-06`), a confirmed `Booking` transitions into an active `RentalContract`.
+  * `User "1" -- "0..*" AuditLog` and `Administrator "1" -- "0..*" SystemConfig`: Tracks immutable security logs (`FR-SYS-04`, `FR-ADM-07`) and dynamic system parameters (`FR-ADM-03`).
 
 ## 6. Data Model
 *(To be updated)*
