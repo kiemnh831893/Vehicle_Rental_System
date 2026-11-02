@@ -366,8 +366,232 @@ To guide software implementation (Stage 3) and test case creation (Stage 4), the
   * **5a. Violation Detected:** If the vehicle is returned past the due date, has insufficient fuel, or its condition is `SCRATCHED` / `DAMAGED`, the system triggers **UC-14** to calculate overdue penalty fees and repair costs, adds them to the final invoice, and sets the vehicle status to `MAINTENANCE` (if damaged) before closing the contract.
 
 
-## 5. Class Diagram
-*(To be updated)*
+@startuml
+top to bottom direction
+
+' Tinh chỉnh khoảng cách chống đè chữ & chống cắt dây tuyệt đối
+skinparam nodesep 55
+skinparam ranksep 65
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam linetype ortho
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    HeaderBackgroundColor #F2F4F8
+    BorderColor #2B2B2B
+    BorderThickness 1.2
+    ArrowColor #2B2B2B
+    FontColor #000000
+}
+
+' ==========================================
+' 1. NHÁNH KẾ THỪA NGƯỜI DÙNG (USER HIERARCHY)
+' ==========================================
+abstract class "User" as User <<abstract>> {
+    # userId : String {id}
+    # fullName : String
+    # email : String
+    # phone : String
+    # nationalId : String
+    # passwordHash : String
+    # accountStatus : AccountStatus
+    # createdAt : DateTime
+    + login(email: String, pass: String) : boolean
+    + updateProfile() : void
+}
+
+class Customer {
+    - driverLicenseNo : String
+    - licenseImageUrl : String
+    - licenseStatus : LicenseStatus
+    + uploadLicense(imgUrl: String) : void
+    + bookVehicle(vehicleId: String, pickup: DateTime, returnDate: DateTime) : Booking
+    + requestExtension(contractId: String, newReturnDate: DateTime) : boolean
+}
+
+class RentalStaff {
+    - employeeCode : String {id}
+    - branchLocation : String
+    + verifyCustomerLicense(customerId: String, isApproved: boolean) : void
+    + processHandover(bookingId: String, startMileage: int, fuel: String) : RentalContract
+    + processReturn(contractId: String, endMileage: int, cond: VehicleCondition) : Invoice
+    + recordViolationFine(contractId: String, type: ViolationType, amount: double) : FineRecord
+}
+
+class Administrator {
+    - roleLevel : int
+    + manageStaffAccount(staff: RentalStaff) : void
+    + updateSystemConfig(key: String, value: String) : void
+    + generateStatisticalReport(month: int, year: int) : void
+    + triggerDatabaseBackup() : boolean
+}
+
+User <|-- Customer
+User <|-- RentalStaff
+User <|-- Administrator
+
+' ==========================================
+' 2. NHÓM ĐỐI TƯỢNG PHƯƠNG TIỆN & NGHIỆP VỤ THUÊ
+' ==========================================
+class VehicleCategory {
+    - categoryId : int {id}
+    - categoryName : String
+    - depositRate : double
+    - description : String
+    + getVehiclesByCategory() : List<Vehicle>
+}
+
+class Vehicle {
+    - vehicleId : String {id}
+    - categoryId : int
+    - licensePlate : String {unique}
+    - brand : String
+    - model : String
+    - publishYear : int
+    - transmission : String
+    - seats : int
+    - dailyRate : double
+    - currentMileage : int
+    - branchLocation : String
+    - status : VehicleStatus
+    + checkAvailability(pickup: DateTime, returnDate: DateTime) : boolean
+    + updateStatus(newStatus: VehicleStatus) : void
+}
+
+class Booking {
+    - bookingId : String {id}
+    - customerId : String
+    - vehicleId : String
+    - pickupDate : DateTime
+    - expectedReturnDate : DateTime
+    - totalEstimatedCost : double
+    - depositAmount : double
+    - bookingStatus : BookingStatus
+    - createdAt : DateTime
+    + calculateDeposit(rate: double) : double
+    + cancelExpiredBooking() : void
+}
+
+class RentalContract {
+    - contractId : String {id}
+    - bookingId : String
+    - staffHandoverId : String
+    - staffReturnId : String [0..1]
+    - actualPickupTime : DateTime
+    - expectedReturnDate : DateTime
+    - actualReturnTime : DateTime [0..1]
+    - startMileage : int
+    - endMileage : int [0..1]
+    - returnCondition : VehicleCondition [0..1]
+    - contractStatus : ContractStatus
+    + approveExtension(newReturnDate: DateTime) : boolean
+    + checkOverdue() : boolean
+    + exportPdfContract() : File
+}
+
+class FineRecord {
+    - fineId : String {id}
+    - contractId : String
+    - violationType : ViolationType
+    - fineAmount : double
+    - description : String
+    - isPaid : boolean
+    + calculateOverduePenalty(hoursLate: int, rate: double) : double
+}
+
+class Invoice {
+    - invoiceId : String {id}
+    - contractId : String
+    - totalRentalFee : double
+    - totalFineFee : double
+    - depositDeducted : double
+    - finalAmountDue : double
+    - paymentMethod : String
+    - paymentStatus : PaymentStatus
+    - paidAt : DateTime [0..1]
+    + calculateFinalSettlement() : double
+    + processPayment() : boolean
+}
+
+class SystemConfig {
+    - configKey : String {id}
+    - configValue : String
+    - updatedAt : DateTime
+}
+
+class AuditLog {
+    - logId : long {id}
+    - userId : String
+    - action : String
+    - timestamp : DateTime
+}
+
+' ==========================================
+' 3. CÁC KIỂU LIỆT KÊ (ENUMERATIONS)
+' ==========================================
+together {
+    enum AccountStatus <<enumeration>> {
+        ACTIVE
+        LOCKED
+    }
+    enum LicenseStatus <<enumeration>> {
+        UNVERIFIED
+        VERIFIED
+        REJECTED
+    }
+    enum VehicleStatus <<enumeration>> {
+        AVAILABLE
+        RESERVED
+        RENTED
+        MAINTENANCE
+        RETIRED
+    }
+    enum BookingStatus <<enumeration>> {
+        PENDING_PAYMENT
+        CONFIRMED
+        CANCELLED
+        CONVERTED_TO_CONTRACT
+    }
+    enum ContractStatus <<enumeration>> {
+        ACTIVE
+        OVERDUE
+        COMPLETED
+    }
+    enum VehicleCondition <<enumeration>> {
+        INTACT
+        SCRATCHED
+        DAMAGED
+    }
+    enum ViolationType <<enumeration>> {
+        LATE_RETURN
+        FUEL_SHORTAGE
+        EXTERIOR_DAMAGE
+    }
+    enum PaymentStatus <<enumeration>> {
+        UNPAID
+        PAID
+        REFUNDED
+    }
+}
+
+' ==========================================
+' 4. LIÊN KẾT GIỮA CÁC LỚP (RELATIONSHIPS)
+' ==========================================
+VehicleCategory "1" o-- "0..*" Vehicle : classifies >
+Customer "1" -- "0..*" Booking : places >
+Vehicle "1" -- "0..*" Booking : reserved in >
+Booking "1" -- "0..1" RentalContract : converts to >
+RentalStaff "1" -- "0..*" RentalContract : processes >
+RentalContract "1" *-- "0..*" FineRecord : incurs >
+RentalContract "1" *-- "1..*" Invoice : generates >
+User "1" -- "0..*" AuditLog : triggers >
+Administrator "1" -- "0..*" SystemConfig : configures >
+
+@enduml
 
 ## 6. Data Model
 *(To be updated)*
